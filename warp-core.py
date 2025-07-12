@@ -21,13 +21,12 @@ async def run(trainer_address, warp_core_address):
             command = {"seg":segments}
 
             requests.post("http://wled-48fc18.local/json/state", json=command)
-            print(data)
 
         await client.is_connected()
         trainer = CyclingPowerService(client)
         trainer.set_cycling_power_measurement_handler(my_measurement_handler)
         await trainer.enable_cycling_power_measurement_notifications()
-        await asyncio.sleep(30.0)
+        await asyncio.sleep(120.0)
         await trainer.disable_cycling_power_measurement_notifications()
 
 
