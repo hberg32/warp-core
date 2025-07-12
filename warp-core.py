@@ -11,6 +11,7 @@ async def run(trainer_address, warp_core_address):
             speed = data.instantaneous_power
 
             segments = []
+            segments.append({"on": True})
             for segment in range(1,8):
                 if speed > 0:
                     segments.append({"on": True, "sx":speed})
