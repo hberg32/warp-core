@@ -5,7 +5,7 @@ import requests
 
 from pycycling.cycling_power_service import CyclingPowerService
 
-async def run(trainer_address, warp_core_address):
+async def run(trainer_address, warp_core_address, core_running):
     async with BleakClient(trainer_address) as client:
         def my_measurement_handler(data):
             speed = data.instantaneous_power
@@ -14,8 +14,12 @@ async def run(trainer_address, warp_core_address):
             segments.append({"on": True})
             for segment in range(1,8):
                 if speed > 0:
-                    segments.append({"on": True, "sx":speed})
+                    if not core_running:
+                        segments.append({"on": True, "sx":speed})
+                    else:
+                        segments.append({"sx":speed})
                 else:
+                    core_running = False
                     segments.append({"on": False})
 
             command = {"seg":segments}
@@ -26,8 +30,8 @@ async def run(trainer_address, warp_core_address):
         trainer = CyclingPowerService(client)
         trainer.set_cycling_power_measurement_handler(my_measurement_handler)
         await trainer.enable_cycling_power_measurement_notifications()
-        await asyncio.sleep(120.0)
-        await trainer.disable_cycling_power_measurement_notifications()
+#        await asyncio.sleep(120.0)
+#        await trainer.disable_cycling_power_measurement_notifications()
 
 
 if __name__ == "__main__":
@@ -38,4 +42,4 @@ if __name__ == "__main__":
     trainer_address = "CF:1D:0F:D9:7C:6D"
     warp_core_address = "wled-48fc18.local"
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(run(trainer_address, warp_core_address))
+    loop.run_until_complete(run(trainer_address, warp_core_address, False))
