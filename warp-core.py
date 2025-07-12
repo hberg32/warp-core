@@ -15,7 +15,7 @@ async def run(trainer_address, warp_core_address):
                 if speed == 0:
                     segments.append({"on": True, "sx":speed})
                 else:
-                    segments.append({"on": False)
+                    segments.append({"on": False})
 
             command = {"seg":segments}
 
